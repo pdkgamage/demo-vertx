@@ -15,8 +15,8 @@ public class HttpServerVerticle extends AbstractVerticle {
     }
 
     // just response with query param
-   /* void helloName(RoutingContext ctx) {
-        //curl  http://localhost:8080/api/hello/HelloVertex
+    /*void helloName(RoutingContext ctx) {
+        //curl  http://localhost:8080/demo/hello/HelloVertex
         String name = ctx.pathParam("name");
         ctx.request().response().end(String.format("Hello  %s" ,name));
     }*/
@@ -33,9 +33,11 @@ public class HttpServerVerticle extends AbstractVerticle {
     void helloName(RoutingContext ctx) {
         String name = ctx.pathParam("name");
         vertx.eventBus().request(EventBusAddress.NAME_RETRIEVE_ADDRESS,name, reply -> {
-            ctx.request().response().end((String)reply.result().body());
+            if(reply.succeeded()) {
+                ctx.request().response().end((String) reply.result().body());
+            } else {
+                ctx.request().response().end(reply.cause().getMessage());
+            }
         });
     }
-
-
 }
